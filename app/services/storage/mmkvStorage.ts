@@ -101,3 +101,71 @@ export function getMultiple<T>(keys: string[]): Record<string, T | null> {
   })
   return result
 }
+
+/**
+ * AI Categorization Cache
+ */
+interface CategoryCache {
+  [key: string]: {
+    category: string
+    confidence: number
+    timestamp: number
+  }
+}
+
+const CACHE_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000 // 30 days
+
+/**
+ * Get cached category for a transaction description
+ */
+export function getCachedCategory(
+  description: string,
+): { category: string; confidence: number } | null {
+  const cache = getItem<CategoryCache>(StorageKeys.AI_CACHE) || {}
+  const key = description.toLowerCase().trim()
+  const cached = cache[key]
+
+  if (cached) {
+    // Check if cache has expired
+    if (Date.now() - cached.timestamp < CACHE_EXPIRY_MS) {
+      return {
+        category: cached.category,
+        confidence: cached.confidence,
+      }
+    }
+  }
+
+  return null
+}
+
+/**
+ * Cache a category result
+ */
+export function setCachedCategory(description: string, category: string, confidence: number): void {
+  const cache = getItem<CategoryCache>(StorageKeys.AI_CACHE) || {}
+  const key = description.toLowerCase().trim()
+
+  cache[key] = {
+    category,
+    confidence,
+    timestamp: Date.now(),
+  }
+
+  setItem(StorageKeys.AI_CACHE, cache)
+}
+
+/**
+ * Clear expired cache entries
+ */
+export function clearExpiredCache(): void {
+  const cache = getItem<CategoryCache>(StorageKeys.AI_CACHE) || {}
+  const now = Date.now()
+
+  Object.keys(cache).forEach((key) => {
+    if (now - cache[key].timestamp >= CACHE_EXPIRY_MS) {
+      delete cache[key]
+    }
+  })
+
+  setItem(StorageKeys.AI_CACHE, cache)
+}
