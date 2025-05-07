@@ -10,3 +10,11 @@ export * from "./Text"
 export * from "./TextField"
 export * from "./Toggle"
 export * from "./EmptyState"
+
+// SmartFinance custom components
+export * from "./CategoryIcon"
+export * from "./TransactionCard"
+export * from "./BudgetCard"
+export * from "./GoalCard"
+export * from "./ProgressBar"
+export * from "./StatCard"
