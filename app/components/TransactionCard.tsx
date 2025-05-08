@@ -10,6 +10,7 @@ import { CategoryIcon } from "./CategoryIcon"
 import { Transaction } from "@/types"
 import { formatCurrency } from "@/utils/currency"
 import { formatRelativeDate } from "@/utils/dateHelpers"
+import tw from "@/utils/tw"
 
 interface TransactionCardProps {
   transaction: Transaction
@@ -19,31 +20,35 @@ interface TransactionCardProps {
 
 export function TransactionCard({ transaction, onPress, showDate = true }: TransactionCardProps) {
   const isIncome = transaction.type === "income"
-  const amountColor = isIncome ? "text-success-600" : "text-gray-900"
 
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center bg-white p-4 rounded-xl mb-2 border border-gray-100 active:bg-gray-50"
+      style={tw`flex-row items-center bg-white p-4 rounded-xl mb-2 border border-gray-100`}
     >
       <CategoryIcon category={transaction.category} size={44} />
 
-      <View className="flex-1 ml-3">
-        <Text className="font-semibold text-gray-900" numberOfLines={1}>
+      <View style={tw`flex-1 ml-3`}>
+        <Text style={tw`font-semibold text-gray-900`} numberOfLines={1}>
           {transaction.description}
         </Text>
         {showDate && (
-          <Text className="text-sm text-gray-500 mt-0.5">
+          <Text style={tw`text-sm text-gray-500 mt-0.5`}>
             {formatRelativeDate(transaction.date)}
           </Text>
         )}
         {transaction.aiCategorized && (
-          <Text className="text-xs text-primary-500 mt-0.5">✨ AI Categorized</Text>
+          <Text style={tw`text-xs text-primary-500 mt-0.5`}>✨ AI Categorized</Text>
         )}
       </View>
 
-      <View className="items-end ml-2">
-        <Text className={`font-bold text-lg ${amountColor}`}>
+      <View style={tw`items-end ml-2`}>
+        <Text
+          style={[
+            tw`font-bold text-lg`,
+            { color: isIncome ? "#16A34A" : "#111827" }, // success-600 : gray-900
+          ]}
+        >
           {isIncome ? "+" : "-"}
           {formatCurrency(Math.abs(transaction.amount))}
         </Text>
